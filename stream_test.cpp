@@ -8,6 +8,10 @@ int main()
 asio::streambuf buf;
 std::ostream output(&buf);
 // Writing the message to the stream-based buffer.
+// Usually, in a typical client or server application, 
+// the data will be written to the buf stream
+// buffer by the Boost.Asio input function such as asio::read() ,
+
 output << "Message1\nMessage2";
 // Now we want to read all data from a streambuf
 // until '\n' delimiter.
