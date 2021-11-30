@@ -10,7 +10,7 @@
 #include <string>
 
 #include <arpa/inet.h>
-#define PORT 8080
+#define PORT 8081
 
 std::string getIpAdress (int soc) {
     struct sockaddr_in addr;
@@ -72,7 +72,7 @@ int main(int argc, char const *argv[])
     valread = read( new_socket , buffer, 1024);
     printf("%s\n",buffer );
     send(new_socket , hello , strlen(hello) , 0 );
-    printf("Hello message sent\n");
+    printf("Server sent message \n");
 
    
     std::cout << "IP ADRESS IS - " <<  getIpAdress(new_socket) << std::endl;

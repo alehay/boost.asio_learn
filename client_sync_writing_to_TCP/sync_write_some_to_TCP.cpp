@@ -1,9 +1,12 @@
 #include <boost/asio.hpp>
 #include <iostream>
+
+/* demo synchronous writing to the socket write_some() */
+
 using namespace boost;
 void writeToSocket(asio::ip::tcp::socket& sock) {
     // Step 2. Allocating and filling the buffer.
-    std::string buf = "Hello";
+    std::string buf = "Client message hello";
     std::size_t total_bytes_written = 0;
     // Step 3. Run the loop until all data is written
     // to the socket.
@@ -14,7 +17,13 @@ void writeToSocket(asio::ip::tcp::socket& sock) {
     }
 }
 
-
+/* aleternativ using write () */
+void writeToSocketEnhanced(asio::ip::tcp::socket& sock) {
+    // Allocating and filling the buffer.   
+    std::string buf = "Hello";
+    // Write whole buffer to the socket.
+    asio::write(sock, asio::buffer(buf));
+}
 
 int main()
 {
