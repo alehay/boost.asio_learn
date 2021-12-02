@@ -17,7 +17,7 @@ add_compile_options( -pg -ggdb -O0 -pg)
 
 add_subdirectory(libs)
 
-
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/boost)
 
 add_executable(server http_server_sync_ssl.cpp)
 add_executable(client http_client_sync_ssl.cpp)
