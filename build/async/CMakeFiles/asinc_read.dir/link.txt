@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/asinc_read.dir/asinc_client_read.cpp.o -o asinc_read  ../../libs/boost/liblib-asio.a ../../libs/boost/liblib-beast.a ../../libs/boost/libboost_json.a -lpthread -lssl -lcrypto 

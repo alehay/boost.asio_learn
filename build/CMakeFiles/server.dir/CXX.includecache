@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kudakov/temp_poj/boos_lern/common/server_certificate.hpp
+boost/asio/buffer.hpp
+-
+boost/asio/ssl/context.hpp
+-
+cstddef
+-
+memory
+-
+
+/home/kudakov/temp_poj/boos_lern/http_server_sync_ssl.cpp
+common/server_certificate.hpp
+/home/kudakov/temp_poj/boos_lern/common/server_certificate.hpp
+boost/beast/core.hpp
+-
+boost/beast/http.hpp
+-
+boost/beast/ssl.hpp
+-
+boost/beast/version.hpp
+-
+boost/asio/ip/tcp.hpp
+-
+boost/asio/ssl/stream.hpp
+-
+boost/config.hpp
+-
+cstdlib
+-
+iostream
+-
+memory
+-
+string
+-
+thread
+-
+

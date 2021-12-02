@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/client.dir/http_client_sync_ssl.cpp.o -o client  ../libs/boost/liblib-asio.a ../libs/boost/liblib-beast.a ../libs/boost/libboost_json.a -lpthread -lssl -lcrypto 

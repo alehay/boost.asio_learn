@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kudakov/temp_poj/boos_lern/chapter_client_server_impliment/exampl_async_client_TCP.cpp
+boost/asio.hpp
+-
+iostream
+-
+memory
+-
+mutex
+-
+thread
+-
+

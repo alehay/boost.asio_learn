@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/simple_server.dir/simple_unix_server.cpp.o -o simple_server 

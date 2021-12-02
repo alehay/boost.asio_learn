@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/exampl_async_client_TCP.dir/exampl_async_client_TCP.cpp.o -o exampl_async_client_TCP  ../../libs/boost/liblib-asio.a ../../libs/boost/liblib-beast.a ../../libs/boost/libboost_json.a -lpthread -lssl -lcrypto 

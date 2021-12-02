@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kudakov/temp_poj/boos_lern/client_sync_writing_to_TCP/sync_readFromSocket.cpp
+boost/asio.hpp
+-
+iostream
+-
+
