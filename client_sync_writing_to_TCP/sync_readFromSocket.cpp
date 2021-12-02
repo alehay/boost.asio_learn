@@ -7,7 +7,9 @@ std::string readFromSocket(asio::ip::tcp::socket& sock) {
     char buf[MESSAGE_SIZE];
     std::size_t total_bytes_read = 0;
     while (total_bytes_read != MESSAGE_SIZE) {
+        
         total_bytes_read += sock.read_some(
+        
         asio::buffer(buf + total_bytes_read,
         MESSAGE_SIZE - total_bytes_read));
     }
