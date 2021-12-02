@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/sync_readFromSocket.dir/sync_readFromSocket.cpp.o -o sync_readFromSocket  ../../libs/boost/liblib-asio.a ../../libs/boost/liblib-beast.a ../../libs/boost/libboost_json.a -lpthread -lssl -lcrypto 

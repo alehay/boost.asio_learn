@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/simple_server_asio.dir/simple_server_asio.cpp.o -o simple_server_asio  ../libs/boost/liblib-asio.a ../libs/boost/liblib-beast.a ../libs/boost/libboost_json.a -lpthread -lssl -lcrypto 

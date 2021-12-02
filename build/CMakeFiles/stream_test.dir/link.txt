@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/stream_test.dir/stream_test.cpp.o -o stream_test  ../libs/boost/liblib-asio.a ../libs/boost/liblib-beast.a ../libs/boost/libboost_json.a -lpthread -lssl -lcrypto 
