@@ -1,3 +1,5 @@
+message( " -- boost --  ")
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(boost_asio STATIC IMPORTED GLOBAL)

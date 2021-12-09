@@ -1622,17 +1622,6 @@ std::size_t read_until(SyncReadStream& s, DynamicBuffer_v2 buffers,
  * @code { 'd', 'e', ... } @endcode
  * This data may be the start of a new line, to be extracted by a subsequent
  * @c async_read_until operation.
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename DynamicBuffer_v1,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -1734,17 +1723,6 @@ async_read_until(AsyncReadStream& s,
  * @code { 'd', 'e', ... } @endcode
  * This data may be the start of a new line, to be extracted by a subsequent
  * @c async_read_until operation.
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename DynamicBuffer_v1,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -1854,17 +1832,6 @@ async_read_until(AsyncReadStream& s,
  * @code { 'd', 'e', ... } @endcode
  * This data may be the start of a new line, to be extracted by a subsequent
  * @c async_read_until operation.
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename DynamicBuffer_v1,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -2016,17 +1983,6 @@ async_read_until(AsyncReadStream& s,
  * std::string data;
  * boost::asio::async_read_until(s, data, match_char('a'), handler);
  * @endcode
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream,
     typename DynamicBuffer_v1, typename MatchCondition,
@@ -2131,17 +2087,6 @@ async_read_until(AsyncReadStream& s,
  * @code { 'd', 'e', ... } @endcode
  * This data may be the start of a new line, to be extracted by a subsequent
  * @c async_read_until operation.
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename Allocator,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -2233,17 +2178,6 @@ async_read_until(AsyncReadStream& s,
  * @code { 'd', 'e', ... } @endcode
  * This data may be the start of a new line, to be extracted by a subsequent
  * @c async_read_until operation.
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename Allocator,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -2343,17 +2277,6 @@ async_read_until(AsyncReadStream& s,
  * @code { 'd', 'e', ... } @endcode
  * This data may be the start of a new line, to be extracted by a subsequent
  * @c async_read_until operation.
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename Allocator,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -2493,17 +2416,6 @@ async_read_until(AsyncReadStream& s,
  * boost::asio::streambuf b;
  * boost::asio::async_read_until(s, b, match_char('a'), handler);
  * @endcode
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename Allocator, typename MatchCondition,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -2605,17 +2517,6 @@ async_read_until(AsyncReadStream& s,
  * @code { 'd', 'e', ... } @endcode
  * This data may be the start of a new line, to be extracted by a subsequent
  * @c async_read_until operation.
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename DynamicBuffer_v2,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -2713,17 +2614,6 @@ async_read_until(AsyncReadStream& s, DynamicBuffer_v2 buffers, char delim,
  * @code { 'd', 'e', ... } @endcode
  * This data may be the start of a new line, to be extracted by a subsequent
  * @c async_read_until operation.
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename DynamicBuffer_v2,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -2829,17 +2719,6 @@ async_read_until(AsyncReadStream& s, DynamicBuffer_v2 buffers,
  * @code { 'd', 'e', ... } @endcode
  * This data may be the start of a new line, to be extracted by a subsequent
  * @c async_read_until operation.
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream, typename DynamicBuffer_v2,
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -2987,17 +2866,6 @@ async_read_until(AsyncReadStream& s, DynamicBuffer_v2 buffers,
  * std::string data;
  * boost::asio::async_read_until(s, data, match_char('a'), handler);
  * @endcode
- *
- * @par Per-Operation Cancellation
- * This asynchronous operation supports cancellation for the following
- * boost::asio::cancellation_type values:
- *
- * @li @c cancellation_type::terminal
- *
- * @li @c cancellation_type::partial
- *
- * if they are also supported by the @c AsyncReadStream type's
- * @c async_read_some operation.
  */
 template <typename AsyncReadStream,
     typename DynamicBuffer_v2, typename MatchCondition,

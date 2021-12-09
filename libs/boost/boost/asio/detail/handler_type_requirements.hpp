@@ -65,7 +65,7 @@ template <typename Handler>
 auto zero_arg_copyable_handler_test(Handler h, void*)
   -> decltype(
     sizeof(Handler(static_cast<const Handler&>(h))),
-    (BOOST_ASIO_MOVE_OR_LVALUE(Handler)(h)()),
+    ((h)()),
     char(0));
 
 template <typename Handler>
@@ -75,7 +75,7 @@ template <typename Handler, typename Arg1>
 auto one_arg_handler_test(Handler h, Arg1* a1)
   -> decltype(
     sizeof(Handler(BOOST_ASIO_MOVE_CAST(Handler)(h))),
-    (BOOST_ASIO_MOVE_OR_LVALUE(Handler)(h)(*a1)),
+    ((h)(*a1)),
     char(0));
 
 template <typename Handler>
@@ -85,7 +85,7 @@ template <typename Handler, typename Arg1, typename Arg2>
 auto two_arg_handler_test(Handler h, Arg1* a1, Arg2* a2)
   -> decltype(
     sizeof(Handler(BOOST_ASIO_MOVE_CAST(Handler)(h))),
-    (BOOST_ASIO_MOVE_OR_LVALUE(Handler)(h)(*a1, *a2)),
+    ((h)(*a1, *a2)),
     char(0));
 
 template <typename Handler>
@@ -95,8 +95,7 @@ template <typename Handler, typename Arg1, typename Arg2>
 auto two_arg_move_handler_test(Handler h, Arg1* a1, Arg2* a2)
   -> decltype(
     sizeof(Handler(BOOST_ASIO_MOVE_CAST(Handler)(h))),
-    (BOOST_ASIO_MOVE_OR_LVALUE(Handler)(h)(
-      *a1, BOOST_ASIO_MOVE_CAST(Arg2)(*a2))),
+    ((h)(*a1, BOOST_ASIO_MOVE_CAST(Arg2)(*a2))),
     char(0));
 
 template <typename Handler>
@@ -118,11 +117,9 @@ template <typename T> const T& clvref(T);
 #if defined(BOOST_ASIO_HAS_MOVE)
 template <typename T> T rvref();
 template <typename T> T rvref(T);
-template <typename T> T rorlvref();
 #else // defined(BOOST_ASIO_HAS_MOVE)
 template <typename T> const T& rvref();
 template <typename T> const T& rvref(T);
-template <typename T> T& rorlvref();
 #endif // defined(BOOST_ASIO_HAS_MOVE)
 template <typename T> char argbyv(T);
 
@@ -149,7 +146,7 @@ struct handler_type_requirements
           boost::asio::detail::clvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()(), \
         char(0))> BOOST_ASIO_UNUSED_TYPEDEF
 
@@ -174,7 +171,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>(), \
             boost::asio::detail::lvref<const std::size_t>()), \
@@ -201,7 +198,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>(), \
             boost::asio::detail::lvref<const std::size_t>()), \
@@ -227,7 +224,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>()), \
         char(0))> BOOST_ASIO_UNUSED_TYPEDEF
@@ -253,7 +250,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>(), \
             boost::asio::detail::rvref<socket_type>()), \
@@ -279,7 +276,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>()), \
         char(0))> BOOST_ASIO_UNUSED_TYPEDEF
@@ -305,7 +302,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>(), \
             boost::asio::detail::lvref<const endpoint_type>()), \
@@ -332,7 +329,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>(), \
             boost::asio::detail::lvref<const iter_type>()), \
@@ -359,7 +356,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>(), \
             boost::asio::detail::lvref<const range_type>()), \
@@ -385,7 +382,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>()), \
         char(0))> BOOST_ASIO_UNUSED_TYPEDEF
@@ -411,7 +408,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>(), \
             boost::asio::detail::lvref<const int>()), \
@@ -437,7 +434,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>()), \
         char(0))> BOOST_ASIO_UNUSED_TYPEDEF
@@ -463,7 +460,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
           boost::asio::detail::lvref<const boost::system::error_code>(), \
           boost::asio::detail::lvref<const std::size_t>()), \
@@ -489,7 +486,7 @@ struct handler_type_requirements
           boost::asio::detail::rvref< \
             asio_true_handler_type>())) + \
       sizeof( \
-        boost::asio::detail::rorlvref< \
+        boost::asio::detail::lvref< \
           asio_true_handler_type>()( \
             boost::asio::detail::lvref<const boost::system::error_code>()), \
         char(0))> BOOST_ASIO_UNUSED_TYPEDEF

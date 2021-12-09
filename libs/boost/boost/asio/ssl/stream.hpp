@@ -116,29 +116,12 @@ public:
    * @param other The other stream object from which the move will occur. Must
    * have no outstanding asynchronous operations associated with it. Following
    * the move, @c other has a valid but unspecified state where the only safe
-   * operation is destruction, or use as the target of a move assignment.
+   * operation is destruction.
    */
   stream(stream&& other)
     : next_layer_(BOOST_ASIO_MOVE_CAST(Stream)(other.next_layer_)),
       core_(BOOST_ASIO_MOVE_CAST(detail::stream_core)(other.core_))
   {
-  }
-
-  /// Move-assign a stream from another.
-  /**
-   * @param other The other stream object from which the move will occur. Must
-   * have no outstanding asynchronous operations associated with it. Following
-   * the move, @c other has a valid but unspecified state where the only safe
-   * operation is destruction, or use as the target of a move assignment.
-   */
-  stream& operator=(stream&& other)
-  {
-    if (this != &other)
-    {
-      next_layer_ = BOOST_ASIO_MOVE_CAST(Stream)(other.next_layer_);
-      core_ = BOOST_ASIO_MOVE_CAST(detail::stream_core)(other.core_);
-    }
-    return *this;
   }
 #endif // defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
@@ -462,17 +445,6 @@ public:
    * @code void handler(
    *   const boost::system::error_code& error // Result of operation.
    * ); @endcode
-   *
-   * @par Per-Operation Cancellation
-   * This asynchronous operation supports cancellation for the following
-   * boost::asio::cancellation_type values:
-   *
-   * @li @c cancellation_type::terminal
-   *
-   * @li @c cancellation_type::partial
-   *
-   * if they are also supported by the @c Stream type's @c async_read_some and
-   * @c async_write_some operations.
    */
   template <
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code))
@@ -509,17 +481,6 @@ public:
    *   const boost::system::error_code& error, // Result of operation.
    *   std::size_t bytes_transferred // Amount of buffers used in handshake.
    * ); @endcode
-   *
-   * @par Per-Operation Cancellation
-   * This asynchronous operation supports cancellation for the following
-   * boost::asio::cancellation_type values:
-   *
-   * @li @c cancellation_type::terminal
-   *
-   * @li @c cancellation_type::partial
-   *
-   * if they are also supported by the @c Stream type's @c async_read_some and
-   * @c async_write_some operations.
    */
   template <typename ConstBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -574,17 +535,6 @@ public:
    * @code void handler(
    *   const boost::system::error_code& error // Result of operation.
    * ); @endcode
-   *
-   * @par Per-Operation Cancellation
-   * This asynchronous operation supports cancellation for the following
-   * boost::asio::cancellation_type values:
-   *
-   * @li @c cancellation_type::terminal
-   *
-   * @li @c cancellation_type::partial
-   *
-   * if they are also supported by the @c Stream type's @c async_read_some and
-   * @c async_write_some operations.
    */
   template <
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code))
@@ -672,17 +622,6 @@ public:
    * the peer. Consider using the @ref async_write function if you need to
    * ensure that all data is written before the asynchronous operation
    * completes.
-   *
-   * @par Per-Operation Cancellation
-   * This asynchronous operation supports cancellation for the following
-   * boost::asio::cancellation_type values:
-   *
-   * @li @c cancellation_type::terminal
-   *
-   * @li @c cancellation_type::partial
-   *
-   * if they are also supported by the @c Stream type's @c async_read_some and
-   * @c async_write_some operations.
    */
   template <typename ConstBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
@@ -770,17 +709,6 @@ public:
    * number of bytes. Consider using the @ref async_read function if you need to
    * ensure that the requested amount of data is read before the asynchronous
    * operation completes.
-   *
-   * @par Per-Operation Cancellation
-   * This asynchronous operation supports cancellation for the following
-   * boost::asio::cancellation_type values:
-   *
-   * @li @c cancellation_type::terminal
-   *
-   * @li @c cancellation_type::partial
-   *
-   * if they are also supported by the @c Stream type's @c async_read_some and
-   * @c async_write_some operations.
    */
   template <typename MutableBufferSequence,
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,

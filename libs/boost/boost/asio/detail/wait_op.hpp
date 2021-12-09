@@ -31,13 +31,9 @@ public:
   // The error code to be passed to the completion handler.
   boost::system::error_code ec_;
 
-  // The operation key used for targeted cancellation.
-  void* cancellation_key_;
-
 protected:
   wait_op(func_type func)
-    : operation(func),
-      cancellation_key_(0)
+    : operation(func)
   {
   }
 };

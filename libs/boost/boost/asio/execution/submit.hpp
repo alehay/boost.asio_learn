@@ -109,7 +109,7 @@ struct can_submit :
 
 #else // defined(GENERATING_DOCUMENTATION)
 
-namespace boost_asio_execution_submit_fn {
+namespace asio_execution_submit_fn {
 
 using boost::asio::declval;
 using boost::asio::enable_if;
@@ -386,22 +386,22 @@ struct static_instance
 template <typename T>
 const T static_instance<T>::instance = {};
 
-} // namespace boost_asio_execution_submit_fn
+} // namespace asio_execution_submit_fn
 namespace boost {
 namespace asio {
 namespace execution {
 namespace {
 
-static BOOST_ASIO_CONSTEXPR const boost_asio_execution_submit_fn::impl&
-  submit = boost_asio_execution_submit_fn::static_instance<>::instance;
+static BOOST_ASIO_CONSTEXPR const asio_execution_submit_fn::impl&
+  submit = asio_execution_submit_fn::static_instance<>::instance;
 
 } // namespace
 
 template <typename S, typename R>
 struct can_submit :
   integral_constant<bool,
-    boost_asio_execution_submit_fn::call_traits<S, void(R)>::overload !=
-      boost_asio_execution_submit_fn::ill_formed>
+    asio_execution_submit_fn::call_traits<S, void(R)>::overload !=
+      asio_execution_submit_fn::ill_formed>
 {
 };
 
@@ -415,7 +415,7 @@ constexpr bool can_submit_v = can_submit<S, R>::value;
 template <typename S, typename R>
 struct is_nothrow_submit :
   integral_constant<bool,
-    boost_asio_execution_submit_fn::call_traits<S, void(R)>::is_noexcept>
+    asio_execution_submit_fn::call_traits<S, void(R)>::is_noexcept>
 {
 };
 
@@ -430,7 +430,7 @@ constexpr bool is_nothrow_submit_v
 template <typename S, typename R>
 struct submit_result
 {
-  typedef typename boost_asio_execution_submit_fn::call_traits<
+  typedef typename asio_execution_submit_fn::call_traits<
       S, void(R)>::result_type type;
 };
 
