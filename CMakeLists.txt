@@ -1,19 +1,25 @@
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
+cmake_minimum_required(VERSION 3.5)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
-SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pthread")
+project(Boost_asio_test)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
+add_compile_options( -pg -ggdb -O0 -pg)
+#add_compile_options(-pedantic-errors)
+# add_compile_options(-Wall)
+add_compile_options(-Wextra)
 
-include_directories(${Boost_INCLUDE_DIRS})
 
-link_directories(${Boost_LIBRARY_DIRS})
+add_subdirectory(libs)
 
-add_executable(client Client.cpp)
-add_executable(server Server.cpp)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/boost)
 
-target_link_libraries(client ${Boost_LIBRARIES})
-target_link_libraries(server ${Boost_LIBRARIES})
+add_executable(client Client_denis.cpp)
+add_executable(server Server_denis.cpp)
+
+target_include_directories(server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+target_include_directories(client PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+
+
+target_link_libraries(server PUBLIC boost_asio boost_beast boost_json pthread ssl crypto)
+target_link_libraries(client PUBLIC boost_asio boost_beast boost_json pthread ssl crypto)
