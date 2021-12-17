@@ -24,6 +24,7 @@ private:
             read();
             std::cout << "session run completed" << std::endl;
         }
+
         void read()
         {
             std::cout << "read" << std::endl;
@@ -46,6 +47,7 @@ private:
             }
             std::cout << "on_read completed" << std::endl;
         }
+        
         void write(std::size_t bytes)
         {
             std::cout << "write" << std::endl;
@@ -60,7 +62,7 @@ private:
             std::cout << "on_write" << std::endl;
             if(!error)
             {
-                read();
+                // read();
             }
             else
             {
