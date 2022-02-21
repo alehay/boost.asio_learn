@@ -18,3 +18,7 @@ set_target_properties(boost_json PROPERTIES
     IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/libboost_json-mt-x64.a
 )
 
+add_library(libboost_program_options STATIC IMPORTED GLOBAL)
+set_target_properties(libboost_program_options PROPERTIES 
+    IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/libboost_program_options.a
+)
