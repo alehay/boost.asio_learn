@@ -1,0 +1,1 @@
+add_library(HttpsClient HttpsClient.hpp HttpsClient.cpp)

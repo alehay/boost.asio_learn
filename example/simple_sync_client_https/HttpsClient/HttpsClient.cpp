@@ -59,7 +59,7 @@ std::string HttpsClient::PostRequest(const std::string& task, const std::string&
     }
 
     boost::beast::http::request<boost::beast::http::string_body> req(boost::beast::http::verb::post, target, 11);
-    req.set(boost::beast::http::field::host, "mediasearch-client");
+    req.set(boost::beast::http::field::host, "some_host");
     req.body() = task;
     req.content_length(req.body().size());
     req.keep_alive(false);

@@ -1,3 +1,5 @@
+/* Simple client example */
+
 #include <boost/asio.hpp>
 #include <algorithm>
 #include <iostream>

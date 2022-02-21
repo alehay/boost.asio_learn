@@ -1,3 +1,5 @@
+/* Simple server example */
+
 #include <boost/asio.hpp>
 #include <memory>
 #include <algorithm>
