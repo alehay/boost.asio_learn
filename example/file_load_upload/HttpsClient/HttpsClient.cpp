@@ -1,39 +1,52 @@
 #include "HttpsClient.hpp"
 
-HttpsClient::HttpsClient(boost::asio::io_context& context)
+// https://www.boost.org/doc/libs/1_73_0/doc/html/boost_asio/reference/ssl__context.html
+
+HttpsClient::HttpsClient(boost::asio::io_context& context, Config conf)
     : context(context)
     , ssl_context(boost::asio::ssl::context::tlsv12_client)
     , resolver(context)
 {
     boost::system::error_code error;
+   
+   
     ssl_context.set_verify_mode(boost::asio::ssl::verify_peer, error);
+   
+   
     if(error.failed())
     {
-        spdlog::error("verify mode error");
+        std::cout << "verify mode error"  << std::endl;
         exit(23);
     }
 
-    if(!std::filesystem::exists("./rootca.crt")
+    if(!std::filesystem::exists(conf.rootCACertificate))
     {
-        spdlog::error("No filepath");
+        std::cout << "No filepath" <<  std::endl;
         exit(33);
     }
 
-    ssl_context.add_verify_path("./rootca.crt", error);
+
+    // Здесь не каталог !!!! а файл !!!
+    ssl_context.add_verify_path(conf.rootCACertificate, error);
+
     if(error.failed())
     {
-        spdlog::error("No verify path");
+        std::cout << "No verify path" << std::endl;
         exit(43);
     }
     
-    results = resolver.resolve(config.serverHost, "65005", error);
+    results = resolver.resolve(conf.serverHost, conf.serverPort, error);
     if(error.failed())
     {
-        spdlog::info("Error resolving dns name");
+        std::cout << "Error resolving dns name" << std::endl;
+         std::cout << error.what() << std::endl;
+        std::cout << error.message() << std::endl;
+        std::cout << error.category().name()  << std::endl;
         exit(53);
     }
 }
 
+/*
 std::string HttpsClient::PostRequest(const std::string& task, bool& bad)
 {   
 
@@ -102,7 +115,7 @@ std::string HttpsClient::PostRequest(const std::string& task, bool& bad)
 
     return boost::beast::buffers_to_string(res.body().data());
 }
-
+*/
 
 std::string HttpsClient::GetRequest(const std::string& filePath, const std::string& saveFilePath, bool& bad)
 {
@@ -121,16 +134,25 @@ std::string HttpsClient::GetRequest(const std::string& filePath, const std::stri
     if(error.failed())
     {
         bad = true;
-        std::cout << "Error connnecting" std::endl;
+        std::cout << "Error connnecting" << std::endl;
         boost::beast::get_lowest_layer(stream).close();
         return error.message();
     }
+
     stream.handshake(boost::asio::ssl::stream_base::client, error);
+    
     if(error.failed())
     {
+
         bad = true;
-        std::cout <<  "Error handshaking" std::endl;
+        std::cout <<  "Error handshaking" << std::endl;
         boost::beast::get_lowest_layer(stream).close();
+        
+        std::cout << error.what() << std::endl;
+        std::cout << error.message() << std::endl;
+        std::cout << error.category().name() << std::endl;
+
+
         return error.message();
     }
 

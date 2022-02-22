@@ -13,10 +13,11 @@ std::string HttpsServer::GetContentType(const std::string& target)
     return "application/text";
 }
 
-HttpsSession::HttpsSession(boost::asio::ip::tcp::socket&& socket, const std::string& filePath, 
-                            boost::asio::ssl::context& context, std::weak_ptr<HttpsServer> host)
+HttpsSession::HttpsSession(
+                            boost::asio::ip::tcp::socket&& socket, 
+                            boost::asio::ssl::context& context, 
+                            std::weak_ptr<HttpsServer> host)
                                         : stream(std::move(socket), context)
-                                        , filePath(filePath)
                                         , exec(*this)
                                         , host(host)
 {
@@ -36,34 +37,7 @@ boost::beast::http::response<boost::beast::http::string_body>
     return res;
 }
 
-boost::beast::http::response<boost::beast::http::string_body> 
-    HttpsServer::HandlePostFindWithMeta(boost::beast::http::request<boost::beast::http::string_body>&& req)
-{
-    std::string val = req.body();
-    boost::system::error_code error;
-    boost::json::value target = boost::json::parse(val, error);
-    if(!error)
-    {
-        bool bad;
-        auto result_find = ProcessRequest(target, bad);
 
-        if(bad)
-        {
-            return Error(boost::beast::http::status::bad_request, "Error in JSON fields", req.version());
-        }
-
-        boost::beast::http::response<boost::beast::http::string_body> res{boost::beast::http::status::ok, req.version()};
-        res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
-        res.set(boost::beast::http::field::content_type, "application/json");
-        res.keep_alive(req.keep_alive());
-        res.body() = boost::json::serialize(result_find);
-        res.content_length(res.body().size());
-        res.prepare_payload();
-
-        return res;
-    }
-    return Error(boost::beast::http::status::bad_request, "Body is not json", req.version());
-}
 
 std::variant<boost::beast::http::response<boost::beast::http::file_body>,
                 boost::beast::http::response<boost::beast::http::string_body>>
@@ -71,7 +45,7 @@ std::variant<boost::beast::http::response<boost::beast::http::file_body>,
 {
     std::string target = std::string(req.target().begin(), req.target().end());
 
-    if(!std::filesystem::exists(target) || target.find(fileDir) == std::string::npos)
+    if(!std::filesystem::exists(target) )
     {
         return Error(boost::beast::http::status::not_found, target, req.version());
     }
@@ -99,6 +73,8 @@ std::variant<boost::beast::http::response<boost::beast::http::file_body>,
     return res;
 }
 
+
+
 void HttpsSession::Run()
 {
     boost::asio::dispatch(
@@ -107,6 +83,8 @@ void HttpsSession::Run()
                 &HttpsSession::OnRun,
                 this->shared_from_this()));
 }
+// run call -> on run 
+
 
 void HttpsSession::OnRun()
 {
@@ -119,16 +97,22 @@ void HttpsSession::OnRun()
             &HttpsSession::OnPerformingSsl,
             this->shared_from_this()));
 }
+// OnRun -> OnPerformingSsl
+
 
 void HttpsSession::OnPerformingSsl(boost::system::error_code error)
 {
     if(error)
     {
-        spdlog::warn("Error handshake");
+        std::cout << "Error handshake" << std::endl;
+        std::cout << error.what() << std::endl;
+        std::cout << error.message() << std::endl;
+        std::cout << error.category().name() << std::endl;
         return;
     }
     DoRead();
 }
+// OnPerformingSsl -> DoRead
 
 void HttpsSession::DoRead()
 {
@@ -141,6 +125,7 @@ void HttpsSession::DoRead()
             &HttpsSession::OnRead,
             this->shared_from_this()));
 }
+// DoRead -> OnRead
 
 void HttpsSession::OnRead(boost::system::error_code error, std::size_t bytes_transferred)
 {
@@ -153,11 +138,35 @@ void HttpsSession::OnRead(boost::system::error_code error, std::size_t bytes_tra
 
     if(error)
     {
-        spdlog::warn("Error on read");
+        std::cout << "Error on read" << std::endl;
     }
 
     HandleRequest(std::move(req), exec);
 }
+// OnRead -> HandleRequest
+
+void HttpsSession::HandleRequest(boost::beast::http::request<boost::beast::http::string_body>&& req, Executable& send)
+{
+    if(req.method() == boost::beast::http::verb::get)
+    {
+        auto res = host.lock()->HandleGetLoad(std::move(req));
+
+        if(res.index() == 0)
+        {
+            send(std::move(std::get<boost::beast::http::response<boost::beast::http::file_body>>(std::move(res))));
+        }
+        else
+        {
+            send(std::move(std::get<boost::beast::http::response<boost::beast::http::string_body>>(std::move(res))));
+        }
+
+        return;
+    }
+
+    std::cout << "Unknown HTTP-method" << std::endl;
+    send(std::move(Error(boost::beast::http::status::bad_request,"Unknown HTTP-method", req.version())));
+}
+
 
 void HttpsSession::OnWrite(bool close, boost::beast::error_code ec, std::size_t bytes_transferred)
 {
@@ -165,7 +174,7 @@ void HttpsSession::OnWrite(bool close, boost::beast::error_code ec, std::size_t 
 
     if(ec)
     {
-        spdlog::warn(ec.message());
+        std::cout << ec.message()  << std::endl;
     }
 
     if(close)
@@ -198,46 +207,49 @@ void HttpsSession::OnShutdown(boost::beast::error_code error)
 {
     if(error)
     {
-        spdlog::warn("Error on shutdown");
+        std::cout << "Error on shutdown" << std::endl;
     }
 }
 
-HttpsServer::HttpsServer(const Config& config, const std::string& fileDir, const std::string InetIp, boost::asio::io_context& context)
+// ###############################  SERVER
+
+
+
+HttpsServer::HttpsServer(const ConfigServer& conf,  const std::string InetIp, boost::asio::io_context& context)
     : ctx(boost::asio::ssl::context::tlsv12)
     , context(context)
     , acc(context)
-    , fileDir(fileDir)
-    , config(config)
+    , config(conf)
 {
     LoadServerCertificate();
-    boost::asio::ip::tcp::endpoint end(boost::asio::ip::make_address(InetIp), port);
+    boost::asio::ip::tcp::endpoint end(boost::asio::ip::make_address(InetIp), std::stoul(config.serverPort));
     boost::system::error_code error;
 
     acc.open(end.protocol(), error);
     if(error)
     {
-        spdlog::critical("Error on open acceptor");
+        std::cout << "Error on open acceptor" << std::endl;
         exit(1);
     }
 
     acc.set_option(boost::asio::socket_base::reuse_address(true), error);
     if(error)
     {
-        spdlog::critical("Error on set options in acceptor");
+        std::cout << "Error on set options in acceptor" <<  std::endl;
         exit(1);
     }
 
     acc.bind(end, error);
     if(error)
     {
-        spdlog::critical("Error on bind acceptor's port");
+        std::cout << "Error on bind acceptor's port" << std::endl;
         exit(1);
     }
 
     acc.listen(boost::asio::socket_base::max_listen_connections, error);
     if(error)
     {
-        spdlog::critical("Error on listen");
+        std::cout << "Error on listen" << std::endl;
         exit(1);
     }
 }
@@ -252,6 +264,8 @@ void HttpsServer::Run()
     DoAccept();
 }
 
+// https://www.boost.org/doc/libs/1_73_0/doc/html/boost_asio/reference/ssl__context.html
+
 void HttpsServer::LoadServerCertificate()
 {
     ctx.set_options(
@@ -263,19 +277,19 @@ void HttpsServer::LoadServerCertificate()
 
     if(!std::filesystem::exists(config.currentServerCertificate))
     {
-        spdlog::critical("No " + config.currentServerCertificate);
+        std::cout << "No " <<  config.currentServerCertificate << std::endl;
         bad = true;
     }
 
     if(!std::filesystem::exists(config.currentServerKey))
     {
-        spdlog::critical("No " + config.currentServerKey);
+        std::cout << "No " + config.currentServerKey << std::endl;
         bad = true;
     }
 
     if(!std::filesystem::exists(config.diffieHellman))
     {
-        spdlog::critical("No " + config.diffieHellman);
+        std::cout << "No " + config.diffieHellman << std::endl;
         bad = true;
     }
 
@@ -286,24 +300,26 @@ void HttpsServer::LoadServerCertificate()
     
     boost::system::error_code error;
 
+    // а если здесь не цепочка ??? 
+    
     ctx.use_certificate_chain_file(config.currentServerCertificate, error);
     if(error.failed())
     {
-        spdlog::critical("Certificate: " + error.message());
+        std::cout << "Certificate: " + error.message() << std::endl;
         exit(1);
     }
 
     ctx.use_private_key_file(config.currentServerKey, boost::asio::ssl::context::pem, error);
     if(error.failed())
     {
-        spdlog::critical("Private key: " + error.message());
+        std::cout << "Private key: " + error.message() << std::endl;
         exit(1);
     }
 
     ctx.use_tmp_dh_file(config.diffieHellman, error);
     if(error.failed())
     {
-        spdlog::critical("Diffie-Hellman: " + error.message());
+        std::cout << "Diffie-Hellman: " + error.message() << std::endl;
         exit(1);
     }
 }
@@ -326,223 +342,22 @@ void HttpsServer::OnAccept(boost::beast::error_code error, boost::asio::ip::tcp:
 {
     if(error)
     {
-        spdlog::warn("Error on accept");
+        std::cout << "Error on accept" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(404));
     }
     else
     {
         std::make_shared<HttpsSession>(
         std::move(sock),
-        fileDir,
         ctx,
         this->weak_from_this())->Run();
     }
     DoAccept();
 }
 
-boost::json::value HttpsServer::ProcessRequest(boost::json::value task, bool& bad)
-{
-    bad = false;
 
-    auto task_obj = task.as_object();
 
-    if (task_obj.empty()) 
-    {
-        spdlog::warn("Error, empty params");
-        bad = true;
-        return {"Empty json"};
-    }
 
-    if(task_obj.find("project_id") == task_obj.end())
-    {
-        spdlog::warn("Error, without project_id");
-        bad = true;
-        return {"Without project_id"};
-    }
-
-    if(task_obj.find("date_from") == task_obj.end())
-    {
-        spdlog::warn("Error, without date_from");
-        bad = true;
-        return {"Without date_from"};
-    }
-
-    if(task_obj.find("date_to") == task_obj.end())
-    {
-        spdlog::warn("Error, without date_to");
-        bad = true;
-        return {"Without date_to"};
-    }
-
-    RequestHandler requestHandler(config, fileDir);
-    RequestHandler::User userData;
-
-    // constructing a query by json fields in request
-    for (auto&& val : task_obj) 
-    {
-        auto key = val.key();
-
-        if (key == "date_from") 
-        {
-            if(!val.value().is_string())
-            {
-                spdlog::error("date_from - must be string");
-                bad = true;
-                return {"date_from - must be string"};
-            }
-            userData.date_from = val.value().as_string().c_str();
-            continue;
-        }
-
-        if (key == "date_to") 
-        {
-            if(!val.value().is_string())
-            {
-                spdlog::error("date_to - must be string");
-                bad = true;
-                return {"date_to - must be string"};
-            }
-            userData.date_to = val.value().as_string().c_str();
-            continue;
-        }
-
-        if (key == "theme") 
-        {
-            if(!val.value().is_string())
-            {
-                spdlog::error("theme - must be string");
-                bad = true;
-                return {"theme - must be string"};
-            }
-            userData.theme = val.value().as_string().c_str();
-            continue;
-        }
-
-        if (key == "pin") 
-        {
-            if(!val.value().is_string())
-            {
-                spdlog::error("pin - must be string");
-                bad = true;
-                return {"pin - must be string"};
-            }
-            userData.pin = val.value().as_string().c_str();
-            continue;
-        }
-
-        if (key == "project_id") 
-        {
-            if(!val.value().is_string())
-            {
-                spdlog::error("project_id - must be string");
-                bad = true;
-                return {"project_id - must be string"};
-            }
-            userData.project_id = val.value().as_string().c_str();
-            continue;
-        }
-
-        if (key == "agent_id") 
-        {
-            if(!val.value().is_array())
-            {
-                spdlog::error("agent_id - must be array");
-                bad = true;
-                return {"agent_id - must be array"};
-            }
-            auto arr = val.value().as_array();
-            for(auto&& agent_id : arr)
-            {
-                if(agent_id.is_string())
-                {
-                    userData.agent_id.emplace_back(agent_id.as_string().c_str());
-                }
-                else
-                {
-                    spdlog::error("agent_id in array - must be string");
-                    bad = true;
-                    return {"agent_id in array - must be string"};
-                }
-            }
-            continue;
-        }
-    }
-
-    auto res = requestHandler.SelectFileNames(userData);
-
-    boost::json::array arr;
-    for(auto&& val : res)
-    {
-        boost::json::object obj;
-        if(!val.dateTimeUtc.empty())
-        {
-            obj["created_utc"] = val.dateTimeUtc;
-        }
-        if(!val.dateTimeGmt.empty())
-        {
-            obj["created_gmt"] = val.dateTimeGmt;
-        }
-        if(!val.theme.empty())
-        {
-            obj["theme"] = val.theme;
-        }
-        if(!val.pin.empty())
-        {
-            obj["pin"] = val.pin;
-        }
-        if(!val.project_id.empty())
-        {
-            obj["project_id"] = val.project_id;
-        }
-        if(!val.agent_id.empty())
-        {
-            obj["agent_id"] = val.agent_id;
-        }
-        if(!val.extention_number.empty())
-        {
-            obj["extension_number"]=val.extention_number;
-        }
-        if(val.display)
-        {
-            obj["display"] = val.display;
-        }
-        if(!val.fileName.empty())
-        {
-            obj["absolute_filename"] = val.fileName;
-        }
-        arr.emplace_back(obj);
-    }
-
-    return arr;
-}
-
-void HttpsSession::HandleRequest(boost::beast::http::request<boost::beast::http::string_body>&& req, Executable& send)
-{
-    if(req.method() == boost::beast::http::verb::get)
-    {
-        auto res = host.lock()->HandleGetLoad(std::move(req));
-
-        if(res.index() == 0)
-        {
-            send(std::move(std::get<boost::beast::http::response<boost::beast::http::file_body>>(std::move(res))));
-        }
-        else
-        {
-            send(std::move(std::get<boost::beast::http::response<boost::beast::http::string_body>>(std::move(res))));
-        }
-
-        return;
-    }
-    if(req.method() == boost::beast::http::verb::post)
-    {
-        send(std::move(host.lock()->HandlePostFindWithMeta(std::move(req))));
-        
-        return;
-    }
-
-    spdlog::warn("Unknown HTTP-method");
-    send(std::move(Error(boost::beast::http::status::bad_request,"Unknown HTTP-method", req.version())));
-}
 
 boost::beast::http::response<boost::beast::http::string_body> HttpsSession::Error(boost::beast::http::status status, const std::string& what, unsigned version)
 {

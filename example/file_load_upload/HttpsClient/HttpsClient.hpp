@@ -18,6 +18,12 @@
 #include <thread>
 #include <vector>
 
+struct Config {
+  std::string rootCACertificate;
+  std::string serverHost;
+  std::string serverPort;
+};
+
 class HttpsClient {
  public:
   /**
@@ -25,14 +31,15 @@ class HttpsClient {
    * @param context Объект для io-операций
    * @param config Конфиг программы
    */
-  HttpsClient(boost::asio::io_context& context);
+  HttpsClient(boost::asio::io_context& context, Config conf);
   /**
    * @brief Отправляет Post-запрос
    * @param task json, содержащий тело запроса(URL файла, который грузим)
    * @param bad ссылка на bool, true, если во время работы произошла ошибка
 
    */
-  std::string PostRequest(const std::string& task, bool& bad);
+  // std::string PostRequest(const std::string& task, bool& bad);
+
   /**
    * @brief file upload request
    *

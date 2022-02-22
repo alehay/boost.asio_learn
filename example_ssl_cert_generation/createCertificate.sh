@@ -53,21 +53,6 @@ echo "Создаем еще один ключ:"
  # создании самоподписанного доверенного сертификата (см. $1), но
  # отсутсвует параметр -x509.
 
-# ----------------------- клинет сертефикат ---------------------------#
-openssl req -new -newkey rsa:2048 -nodes -keyout client01.key \
-        -subj /C=RU/ST=Msk/L=Msk/O=Inc/OU=Web/CN=client/emailAddress=usr@dm.ru \
-        -out client01.csr
-
-#росмотреть данные закрытого ключа и запроса на сертификат (CSR) вы можете с помощью команд:
-
-# openssl rsa -noout -text -in client01.key
-# openssl req -noout -text -in client01.csr
-
-#Подпись запроса на сертификат (CSR) с помощью доверенного сертификата (CA).
-#openssl ca -config ca.config -in client01.csr -out client01.crt -batch
-openssl x509 -req -in client01.csr -CA rootca.crt -CAkey rootca.key -CAcreateserial -out client01.crt -days 1000
-
-#----------------------- конец клиент сертефикат ---------------------#
 
 #-------------------------сервер сертефикат --------------------------#
 openssl req -new -newkey rsa:2048 -nodes -keyout server01.key \
@@ -76,6 +61,8 @@ openssl req -new -newkey rsa:2048 -nodes -keyout server01.key \
 
 
 #openssl ca -config ca.config -in server01.csr -out server01.crt -batch
+
+# подпись сертефиката
 openssl x509 -req -in server01.csr -CA rootca.crt -CAkey rootca.key -CAcreateserial -out server01.crt -days 1000
 
 # ---------------------конец сервет сертефикат ------------------------#
@@ -95,8 +82,9 @@ openssl x509 -req -in server01.csr -CA rootca.crt -CAkey rootca.key -CAcreateser
 #  клиенту, обычно используется файл в формате PKCS#12. В этот файл
 #  упаковывается и защищается паролем вся информация необходимая клиенту
 #  для инсталяции сертификата в броузер.
- openssl pkcs12 -export -in client01.crt -inkey client01.key \
-        -certfile rootca.crt -out client01.p12 -passout pass:q1w2e3
+
+ #openssl pkcs12 -export -in client01.crt -inkey client01.key \
+ #       -certfile rootca.crt -out client01.p12 -passout pass:q1w2e3
 
 
 
@@ -109,11 +97,12 @@ openssl x509 -req -in server01.csr -CA rootca.crt -CAkey rootca.key -CAcreateser
 #openssl x509 -req -in user.csr -CA rootca.crt -CAkey rootca.key -CAcreateserial -out user.crt -days 20000
 
 openssl verify -CAfile rootca.crt rootca.crt #OK
-openssl verify -CAfile rootca.crt clietn01.crt #OK
-openssl verify -CAfile user.crt user.crt #Bad
+openssl verify -CAfile rootca.crt server01.crt #OK
+openssl verify -CAfile server01.crt server01.crt #Bad
 
 #echo "Создание Диффи-Хеллмана параметров:"
-openssl dhparam -out dh2048.pem 2048
+
+#openssl dhparam -out dh2048.pem 2048
 
 #echo "Ключ для корневого сертификата rootca.key, его нужно убрать подальше, на сервере он не нужен.
 #    Корневой сертификат rootca.crt, он будет на сервере, а также будет распространятся вместе с приложением.

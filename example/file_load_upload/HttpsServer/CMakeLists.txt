@@ -1,1 +1,1 @@
-add_library(HttpsServer HttpsServer.hpp HttpsServer.cpp)
+add_executable(HttpsServer mainServer.cpp HttpsServer.hpp HttpsServer.cpp)

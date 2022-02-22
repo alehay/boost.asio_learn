@@ -1,1 +1,1 @@
-add_library(HttpsClient HttpsClient.hpp HttpsClient.cpp)
+add_executable(HttpsClient mainClient.cpp HttpsClient.hpp HttpsClient.cpp)

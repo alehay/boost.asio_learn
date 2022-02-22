@@ -18,6 +18,17 @@
 #include <filesystem>
 #include <variant>
 
+#include <iostream>
+
+struct ConfigServer {
+  std::string rootCACertificate;
+  std::string serverHost;
+  std::string serverPort;
+  std::string currentServerCertificate;
+  std::string currentServerKey; 
+  std::string diffieHellman;
+};
+
 
 class HttpsServer : public std::enable_shared_from_this<HttpsServer>
 {
@@ -26,12 +37,11 @@ public:
     /**
      * @brief Создает объект Https сервера,
      * @param config  структура с настройками.
-     * @param fileDir Полный путь к начальной директории файлов
      * @param InetIp Ip, на котором будет HttpServer
      * @param context Объект управления io.
      * @details Передается структура c настроками, в тч для RequestHandler
      */
-    HttpsServer(const Config& config, const std::string& fileDir, const std::string InetIp, boost::asio::io_context& context);
+    HttpsServer(const ConfigServer& conf , const std::string InetIp, boost::asio::io_context& context);
     ~HttpsServer();
     /**
      * @brief Запускает сервер.
@@ -63,12 +73,7 @@ private:
     * @details ожидает task в виде json формата
 
 
-    * создает объект RequestHandler настроенный из , передает ему
-    структуру RequestHandler::User
-    * заполненную из Json, параметрами, и возвращает результат
-    *  SelectFileNames запроса обернутый в валидный json array
-    */
-    boost::json::value ProcessRequest(boost::json::value task, bool& bad);
+
     /**
      * @brief Метод для загрузки серверного сертификата, RSA-ключа и DH-параметра.
      */
@@ -81,17 +86,19 @@ private:
 
     boost::beast::http::response<boost::beast::http::string_body> 
         Error(boost::beast::http::status status, const std::string& what,unsigned version);
-    //Взять все параметры файлов по метаданным
+
     boost::beast::http::response<boost::beast::http::string_body> 
         HandlePostFindWithMeta(boost::beast::http::request<boost::beast::http::string_body>&& req);
+
+
+
     //Взять URL файлов по параметрам
     std::variant<boost::beast::http::response<boost::beast::http::file_body>,
                 boost::beast::http::response<boost::beast::http::string_body>>
         HandleGetLoad(boost::beast::http::request<boost::beast::http::string_body>&& req);
 private:
-    const unsigned port = 9988;
-    Config config;
-    std::string fileDir;
+    
+    ConfigServer config;
 
     boost::asio::io_context& context;
     boost::asio::ssl::context ctx;
@@ -145,7 +152,10 @@ public:
      * @param context ssl-context для зашифрованного обмена данными.
      * @param host Указатель на HttpsServer. Необходим чтобы сделать запрос в бд.
      */
-    explicit HttpsSession(boost::asio::ip::tcp::socket&& socket, const std::string& filePath, boost::asio::ssl::context& context, std::weak_ptr<HttpsServer> host);
+    explicit HttpsSession(
+        boost::asio::ip::tcp::socket&& socket,  
+        boost::asio::ssl::context& context, 
+        std::weak_ptr<HttpsServer> host);
     /**
      * @brief Запустить обработку клиента.
      */
@@ -165,6 +175,11 @@ private:
      * @param send Объект, с перегруженным оператором operator().
      */
     void HandleRequest(boost::beast::http::request<boost::beast::http::string_body>&& req, Executable& send);
+
+
+
+
+
     /**
      * @brief Метод, запускаемый после Run()
      */
@@ -203,6 +218,7 @@ private:
     Executable exec;
     std::weak_ptr<HttpsServer> host;
     std::string filePath;
+
 };
 
 #endif//HTTPS_SERVER_HPP
