@@ -43,30 +43,40 @@ std::variant<boost::beast::http::response<boost::beast::http::file_body>,
                 boost::beast::http::response<boost::beast::http::string_body>>
     HttpsServer::HandleGetLoad(boost::beast::http::request<boost::beast::http::string_body>&& req)
 {
+    std::cout << "hendl get has ben started " << std::endl;
     std::string target = std::string(req.target().begin(), req.target().end());
+    std::cout << "target is " << target << std::endl;
 
-    if(!std::filesystem::exists(target) )
+    std::string loadTarget {"/v1/download"};
+
+    std::string fileName = target.substr(loadTarget.size());
+
+    std::cout << "file name is " << fileName << std::endl;
+
+    if(!std::filesystem::exists(fileName) )
     {
+        std::cout << "file " << target << "error !" << std::endl;
         return Error(boost::beast::http::status::not_found, target, req.version());
     }
 
     boost::system::error_code ec;
 
     boost::beast::http::file_body::value_type body;
-    body.open(target.c_str(), boost::beast::file_mode::scan, ec);
+    body.open(fileName.c_str(), boost::beast::file_mode::scan, ec);
     if(ec.failed())
     {
-        return Error(boost::beast::http::status::internal_server_error, "Can't open file: '" + target + "'", req.version());
+        return Error(boost::beast::http::status::internal_server_error, "Can't open file: '" + fileName + "'", req.version());
     }
 
     auto size = body.size();
+    std::cout << "body.size() = " << size << std::endl; 
 
     boost::beast::http::response<boost::beast::http::file_body> res{
     std::piecewise_construct,
     std::make_tuple(std::move(body)),
     std::make_tuple(boost::beast::http::status::ok, req.version())};
     res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
-    res.set(boost::beast::http::field::content_type, GetContentType(target));
+    res.set(boost::beast::http::field::content_type, GetContentType(fileName)); // ? 
     res.content_length(size);
     res.keep_alive(req.keep_alive());
 

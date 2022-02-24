@@ -27,7 +27,8 @@ HttpsClient::HttpsClient(boost::asio::io_context& context, Config conf)
 
 
     // Здесь не каталог !!!! а файл !!!
-    ssl_context.add_verify_path(conf.rootCACertificate, error);
+    ssl_context.load_verify_file(conf.rootCACertificate, error);
+
 
     if(error.failed())
     {
@@ -119,6 +120,7 @@ std::string HttpsClient::PostRequest(const std::string& task, bool& bad)
 
 std::string HttpsClient::GetRequest(const std::string& filePath, const std::string& saveFilePath, bool& bad)
 {
+    std::cout << "Clinet GetRequest start" << std::endl; 
     bad = false;
     boost::system::error_code error;
 
@@ -155,15 +157,22 @@ std::string HttpsClient::GetRequest(const std::string& filePath, const std::stri
 
         return error.message();
     }
+    std::cout << "Hnad Shake ok" << std::endl;
 
     // requests a file by path on the server
+//    boost::beast::http::request<boost::beast::http::empty_body> req(boost::beast::http::verb::get, "/v1/download" + filePath, 11);
     boost::beast::http::request<boost::beast::http::empty_body> req(boost::beast::http::verb::get, "/v1/download" + filePath, 11);
+
+
+    std::cout << "request created  with target : " << req.target() << std::endl;
    
     req.set(boost::beast::http::field::host, "some_host");
     req.keep_alive(false);
     req.prepare_payload();
 
+     std::cout << " req.body() "   << std::endl;
     boost::beast::http::write(stream, req, error);
+    std::cout << "request has ben sended ! " << std::endl;
     if(error.failed())
     {
         bad = true;
@@ -181,6 +190,7 @@ std::string HttpsClient::GetRequest(const std::string& filePath, const std::stri
     if(error.failed())
     {
         bad = true;
+        std::cout << " error request !" << std::endl;
         return error.message();
     }
 
