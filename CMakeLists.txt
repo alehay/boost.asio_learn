@@ -15,19 +15,10 @@ add_subdirectory(libs)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/boost)
 
 
-# simple client server
-add_executable(client Client_denis.cpp)
-add_executable(server Server_denis.cpp)
-target_include_directories(server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
-target_include_directories(client PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
-
-target_link_libraries(server PUBLIC boost_json pthread ssl crypto)
-target_link_libraries(client PUBLIC boost_json pthread ssl crypto)
-
 
 
 # load upload file https 
-add_subdirectory(./example/file_load_upload)
+add_subdirectory(./example_asio)
 target_include_directories(HttpsServer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 target_include_directories(HttpsClient PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 
@@ -35,3 +26,6 @@ target_link_libraries(HttpsServer PUBLIC boost_json pthread ssl crypto)
 target_link_libraries(HttpsClient PUBLIC boost_json pthread ssl crypto)
 
 
+add_subdirectory(example_json)
+target_include_directories(jsonParceExample PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+target_link_libraries(jsonParceExample PUBLIC boost_json pthread)
