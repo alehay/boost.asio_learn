@@ -1,0 +1,1 @@
+add_executable(HttpsEchoClient mainClientDebug.cpp HttpsClient.hpp HttpsClient.cpp)

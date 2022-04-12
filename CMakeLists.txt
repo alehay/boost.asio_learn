@@ -29,3 +29,5 @@ target_link_libraries(HttpsClient PUBLIC boost_json pthread ssl crypto)
 add_subdirectory(example_json)
 target_include_directories(jsonParceExample PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 target_link_libraries(jsonParceExample PUBLIC boost_json pthread)
+
+target_link_libraries(HttpsEchoClient PUBLIC boost_json pthread ssl crypto)
